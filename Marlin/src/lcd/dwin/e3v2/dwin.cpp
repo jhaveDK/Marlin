@@ -214,7 +214,7 @@ CrealityDWINClass CrealityDWIN;
             incremental_LSF(&lsf_results, rpos, mesh_z_values[x][y]);
           }
         }
-        
+
         if (finish_incremental_LSF(&lsf_results)) {
           SERIAL_ECHOPGM("Could not complete LSF!");
           return true;
@@ -331,17 +331,17 @@ CrealityDWINClass CrealityDWIN;
         const auto end_y_px   = start_y_px + cell_height_px - 1 - gridline_width;
         DWIN_Draw_Rectangle(1,        // RGB565 colors: http://www.barth-dev.de/online/rgb565-color-picker/
           isnan(mesh_z_values[x][y]) ? Color_Grey : (                                                              // gray if undefined
-            (mesh_z_values[x][y] < 0 ? 
+            (mesh_z_values[x][y] < 0 ?
               (uint16_t)round(0b11111  * -mesh_z_values[x][y] / (!viewer_asymmetric_range ? range : v_min)) << 11 : // red if mesh point value is negative
               (uint16_t)round(0b111111 *  mesh_z_values[x][y] / (!viewer_asymmetric_range ? range : v_max)) << 5) | // green if mesh point value is positive
                 min(0b11111, (((uint8_t)abs(mesh_z_values[x][y]) / 10) * 4))),                                     // + blue stepping for every mm
           start_x_px, start_y_px, end_x_px, end_y_px);
-        while (LCD_SERIAL.availableForWrite() < 32) { // wait for serial to be available without blocking and resetting the MCU 
+        while (LCD_SERIAL.availableForWrite() < 32) { // wait for serial to be available without blocking and resetting the MCU
           gcode.process_subcommands_now_P("G4 P10");
           planner.synchronize();
-        } 
-        // Draw value text on 
-        if (viewer_print_value) { 
+        }
+        // Draw value text on
+        if (viewer_print_value) {
           gcode.process_subcommands_now_P("G4 P10");  // still fails without additional delay...
           planner.synchronize();
           int8_t offset_x, offset_y = cell_height_px / 2 - 6;
@@ -434,7 +434,7 @@ uint16_t CrealityDWINClass::GetColor(uint8_t color, uint16_t original, bool ligh
       break;
     case Cyan:
       return (light) ? Color_Light_Cyan : Color_Cyan;
-      break; 
+      break;
     case Blue:
       return (light) ? Color_Light_Blue : Color_Blue;
       break;
@@ -446,16 +446,16 @@ uint16_t CrealityDWINClass::GetColor(uint8_t color, uint16_t original, bool ligh
       break;
     case Orange:
       return (light) ? Color_Light_Orange : Color_Orange;
-      break;  
+      break;
     case Yellow:
       return (light) ? Color_Light_Yellow : Color_Yellow;
       break;
     case Brown:
       return (light) ? Color_Light_Brown : Color_Brown;
-      break;          
+      break;
     case Black:
       return Color_Black;
-      break;                             
+      break;
   }
   return Color_White;
 }
@@ -477,7 +477,7 @@ void CrealityDWINClass::Draw_Menu_Item(uint8_t row, uint8_t icon/*=0*/, const ch
 
 void CrealityDWINClass::Draw_Checkbox(uint8_t row, bool value) {
   #if ENABLED(DWIN_CREALITY_LCD_CUSTOM_ICONS) // Draw appropriate checkbox icon
-    DWIN_ICON_Show(ICON, (value ? ICON_Checkbox_T : ICON_Checkbox_F), 226, MBASE(row) - 3); 
+    DWIN_ICON_Show(ICON, (value ? ICON_Checkbox_T : ICON_Checkbox_F), 226, MBASE(row) - 3);
   #else                                         // Draw a basic checkbox using rectangles and lines
     DWIN_Draw_Rectangle(1, Color_Bg_Black, 226, MBASE(row) - 3, 226 + 20, MBASE(row) - 3 + 20);
     DWIN_Draw_Rectangle(0, Color_White, 226, MBASE(row) - 3, 226 + 20, MBASE(row) - 3 + 20);
@@ -564,7 +564,7 @@ void CrealityDWINClass::Main_Menu_Icons() {
     DWIN_ICON_Show(ICON, ICON_Control_0, 17, 246);
     DWIN_Draw_String(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 43, 317, F("Control"));
   }
-  #if ANY(HAS_ONESTEP_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY) 
+  #if ANY(HAS_ONESTEP_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY)
     if (selection == 3) {
       DWIN_ICON_Show(ICON, ICON_Leveling_1, 145, 246);
       DWIN_Draw_Rectangle(0, GetColor(eeprom_settings.highlight_box, Color_White), 145, 246, 254, 345);
@@ -790,7 +790,7 @@ void CrealityDWINClass::Draw_Status_Area(bool icons/*=false*/) {
     static float hotend = -1;
     static int16_t hotendtarget = -1;
     static int16_t flow = -1;
-    if (icons) { 
+    if (icons) {
       hotend = -1;
       hotendtarget = -1;
       DWIN_ICON_Show(ICON, ICON_HotendTemp, 10, 383);
@@ -810,7 +810,7 @@ void CrealityDWINClass::Draw_Status_Area(bool icons/*=false*/) {
       flow = -1;
       DWIN_ICON_Show(ICON, ICON_StepE, 112, 417);
       DWIN_Draw_String(false, false, DWIN_FONT_STAT, GetColor(eeprom_settings.status_area_text, Color_White), Color_Bg_Black, 116 + 5 * STAT_CHR_W + 2, 417, F("%"));
-    } 
+    }
     if (planner.flow_percentage[0] != flow) {
       flow = planner.flow_percentage[0];
       DWIN_Draw_IntValue(true, true, 0, DWIN_FONT_STAT, GetColor(eeprom_settings.status_area_text, Color_White), Color_Bg_Black, 3, 116 + 2 * STAT_CHR_W, 417, planner.flow_percentage[0]);
@@ -935,7 +935,7 @@ void CrealityDWINClass::Draw_Popup(const char *line1, const char *line2,const ch
     ypos = 150;
   else
     ypos = 230;
-  if (icon > 0) 
+  if (icon > 0)
     DWIN_ICON_Show(ICON, icon, 101, 105);
   DWIN_Draw_String(false, true, DWIN_FONT_MENU, Popup_Text_Color, Color_Bg_Window, (272 - 8 * strlen(line1)) / 2, ypos, F(line1));
   DWIN_Draw_String(false, true, DWIN_FONT_MENU, Popup_Text_Color, Color_Bg_Window, (272 - 8 * strlen(line2)) / 2, ypos+30, F(line2));
@@ -1115,7 +1115,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           case PREPARE_COOLDOWN:
             if (draw) {
               Draw_Menu_Item(row, ICON_Cool, "Cooldown");
-            } 
+            }
             else {
               thermalManager.zero_fan_speeds();
               thermalManager.disable_all_heaters();
@@ -2894,7 +2894,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Draw_Menu(ColorSettings);
           }
-        break;  
+        break;
       }
       break;
     case ColorSettings:
@@ -2957,7 +2957,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.menu_top_bg, color_names, Custom_Colors);
           }
-          break;  
+          break;
           case COLORSETTINGS_HIGHLIGHT_BORDER:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Highlight Box");
@@ -2966,7 +2966,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.highlight_box, color_names, Custom_Colors);
           }
-          break; 
+          break;
           case COLORSETTINGS_PROGRESS_PERCENT:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Progress Percent");
@@ -2975,7 +2975,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.progress_percent, color_names, Custom_Colors);
           }
-          break;  
+          break;
           case COLORSETTINGS_PROGRESS_TIME:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Progress Time");
@@ -2984,7 +2984,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.progress_time, color_names, Custom_Colors);
           }
-          break;           
+          break;
           case COLORSETTINGS_PROGRESS_STATUS_BAR:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Status Bar Text");
@@ -2993,7 +2993,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.status_bar_text, color_names, Custom_Colors);
           }
-          break;  
+          break;
           case COLORSETTINGS_PROGRESS_STATUS_AREA:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Status Area Text");
@@ -3002,7 +3002,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.status_area_text, color_names, Custom_Colors);
           }
-          break;  
+          break;
           case COLORSETTINGS_PROGRESS_COORDINATES:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Coordinates Text");
@@ -3011,7 +3011,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.coordinates_text, color_names, Custom_Colors);
           }
-          break;     
+          break;
           case COLORSETTINGS_PROGRESS_COORDINATES_LINE:
            if (draw) {
             Draw_Menu_Item(row, ICON_MaxSpeed, "Coordinates Line");
@@ -3020,9 +3020,9 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             Modify_Option(eeprom_settings.coordinates_split_line, color_names, Custom_Colors);
           }
-          break;                                              
+          break;
         }
-        break; 
+        break;
     case Advanced:
 
       #define ADVANCED_BACK 0
@@ -3153,7 +3153,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
               Draw_Checkbox(row, recovery.enabled);
             }
             break;
-        #endif 
+        #endif
       }
       break;
     #if HAS_BED_PROBE
@@ -3177,7 +3177,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
               Draw_Menu(Advanced, ADVANCED_PROBE);
             }
             break;
-          
+
             case PROBE_XOFFSET:
               if (draw) {
                 Draw_Menu_Item(row, ICON_StepX, "Probe X Offset");
@@ -3233,7 +3233,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
         case INFO_BACK:
           if (draw) {
             Draw_Menu_Item(row, ICON_Back, "Back");
-            
+
             #if ENABLED(PRINTCOUNTER)
               char row1[50], row2[50], buf[32];
               printStatistics ps = print_job_timer.getStats();
@@ -3248,7 +3248,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
               sprintf(row2, "Longest: %s", buf);
               Draw_Menu_Item(INFO_PRINTTIME, ICON_PrintTime, row1, row2, false, true);
             #endif
-            
+
             Draw_Menu_Item(INFO_SIZE, ICON_PrintSize, MACHINE_SIZE, NULL, false, true);
             Draw_Menu_Item(INFO_VERSION, ICON_Version, SHORT_BUILD_VERSION, "Build Number: v" BUILD_NUMBER, false, true);
             Draw_Menu_Item(INFO_CONTACT, ICON_Contact, CORP_WEBSITE_E, NULL, false, true);
@@ -3256,7 +3256,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
           else {
             if (menu == Info)
               Draw_Menu(Control, CONTROL_INFO);
-            else 
+            else
               Draw_Main_Menu(3);
           }
           break;
@@ -3602,7 +3602,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
       case MeshViewer:
         #define MESHVIEW_BACK 0
         #define MESHVIEW_TOTAL MESHVIEW_BACK
-        
+
         switch (item) {
           case MESHVIEW_BACK:
             if (draw) {
@@ -3723,7 +3723,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
               }
             }
             break;
-          case LEVELING_M_GOTO_VALUE: 
+          case LEVELING_M_GOTO_VALUE:
             if (draw) {
               Draw_Menu_Item(row, ICON_StockConfiguraton, "Go to Mesh Z Value");
               Draw_Checkbox(row, mesh_conf.goto_mesh_value);
@@ -4256,7 +4256,7 @@ void CrealityDWINClass::Menu_Item_Handler(uint8_t menu, uint8_t item, bool draw/
             }
             break;
         }
-        break;   
+        break;
   }
 }
 
@@ -4308,7 +4308,7 @@ const char * CrealityDWINClass::Get_Menu_Title(uint8_t menu) {
       case Preheat2:
         return (PREHEAT_2_LABEL " Settings");
     #endif
-    #if (PREHEAT_COUNT >= 3) 
+    #if (PREHEAT_COUNT >= 3)
       case Preheat3:
         return (PREHEAT_3_LABEL " Settings");
     #endif
@@ -4485,7 +4485,7 @@ uint8_t CrealityDWINClass::Get_Menu_Size(uint8_t menu) {
     case PreheatHotend:
       return PREHEATHOTEND_TOTAL;
     case ColorSettings:
-      return COLORSETTINGS_TOTAL;  
+      return COLORSETTINGS_TOTAL;
   }
   return 0;
 }
@@ -4669,9 +4669,9 @@ void CrealityDWINClass::Value_Control() {
       sprintf_P(cmd, PSTR("M290 Z%s"), dtostrf((tempvalue/valueunit - zoffsetvalue), 1, 3, str_1));
       gcode.process_subcommands_now_P(cmd);
     }
-    if (valuepointer == &thermalManager.temp_hotend[0].pid.Ki || valuepointer == &thermalManager.temp_bed.pid.Ki) 
+    if (valuepointer == &thermalManager.temp_hotend[0].pid.Ki || valuepointer == &thermalManager.temp_bed.pid.Ki)
       tempvalue = scalePID_i(tempvalue);
-    if (valuepointer == &thermalManager.temp_hotend[0].pid.Kd || valuepointer == &thermalManager.temp_bed.pid.Kd) 
+    if (valuepointer == &thermalManager.temp_hotend[0].pid.Kd || valuepointer == &thermalManager.temp_bed.pid.Kd)
       tempvalue = scalePID_d(tempvalue);
     switch (valuetype) {
       case 0: *(float*)valuepointer = tempvalue/valueunit; break;
@@ -4736,7 +4736,7 @@ void CrealityDWINClass::Option_Control() {
         case COLORSETTINGS_MENU_TOP_TXT: eeprom_settings.menu_top_txt = tempvalue; break;
         case COLORSETTINGS_HIGHLIGHT_BORDER: eeprom_settings.highlight_box = tempvalue; break;
         case COLORSETTINGS_PROGRESS_PERCENT: eeprom_settings.progress_percent = tempvalue; break;
-        case COLORSETTINGS_PROGRESS_TIME: eeprom_settings.progress_time = tempvalue; break;      
+        case COLORSETTINGS_PROGRESS_TIME: eeprom_settings.progress_time = tempvalue; break;
         case COLORSETTINGS_PROGRESS_STATUS_BAR: eeprom_settings.status_bar_text = tempvalue; break;
         case COLORSETTINGS_PROGRESS_STATUS_AREA: eeprom_settings.status_area_text = tempvalue; break;
         case COLORSETTINGS_PROGRESS_COORDINATES: eeprom_settings.coordinates_text = tempvalue; break;
@@ -5082,9 +5082,9 @@ void CrealityDWINClass::Confirm_Control() {
 /* In-Menu Value Modification */
 
 void CrealityDWINClass::Setup_Value(float value, float min, float max, float unit, uint8_t type) {
-  if (valuepointer == &thermalManager.temp_hotend[0].pid.Ki || valuepointer == &thermalManager.temp_bed.pid.Ki) 
+  if (valuepointer == &thermalManager.temp_hotend[0].pid.Ki || valuepointer == &thermalManager.temp_bed.pid.Ki)
     tempvalue = unscalePID_i(value) * unit;
-  else if (valuepointer == &thermalManager.temp_hotend[0].pid.Kd || valuepointer == &thermalManager.temp_bed.pid.Kd) 
+  else if (valuepointer == &thermalManager.temp_hotend[0].pid.Kd || valuepointer == &thermalManager.temp_bed.pid.Kd)
     tempvalue = unscalePID_d(value) * unit;
   else
     tempvalue = value * unit;
@@ -5303,7 +5303,7 @@ void CrealityDWINClass::Screen_Update() {
         set_home_offset(Z_AXIS, -zoffsetvalue);
       #endif
     }
-    
+
     #if HAS_BED_PROBE
       if (probe.offset.z != lastzoffset) {
         zoffsetvalue = lastzoffset = probe.offset.z;
