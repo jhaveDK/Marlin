@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2021 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -22,7 +22,7 @@
 
 /**
  * DWIN by Creality3D
- * Rewrite and Extui Port by Jacob Myers
+ * Rewrite by Jacob Myers
  */
 
 #include "../../inc/MarlinConfigPre.h"
@@ -33,41 +33,17 @@
   #include "../../feature/pause.h"
 #endif
 
-#include "creality_dwin.h"
+#include "e3v2/dwin.h"
 #include "../marlinui.h"
-
-uint8_t MarlinUI::brightness = DEFAULT_LCD_BRIGHTNESS;
-bool MarlinUI::backlight = true;
-
-void MarlinUI::set_brightness(const uint8_t value) {
-  if (value == 0) {
-    backlight = false;
-    DWIN_Backlight_SetLuminance(0);
-  }
-  else {
-    backlight = true;
-    brightness = constrain(value, MIN_LCD_BRIGHTNESS, MAX_LCD_BRIGHTNESS);
-    DWIN_Backlight_SetLuminance(brightness);
-  }
-}
 
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   void MarlinUI::pause_show_message(const PauseMessage message, const PauseMode mode/*=PAUSE_MODE_SAME*/, const uint8_t extruder/*=active_extruder*/) {
-    switch(message) {
-      case PAUSE_MESSAGE_INSERT:
-        CrealityDWIN.Confirm_Handler(FilInsert);
-        break;
-      case PAUSE_MESSAGE_OPTION:
-        CrealityDWIN.Popup_Handler(PurgeMore);
-        break;
-      case PAUSE_MESSAGE_HEAT:
-        CrealityDWIN.Confirm_Handler(HeaterTime);
-        break;
-      case PAUSE_MESSAGE_WAITING:
-        CrealityDWIN.Draw_Print_Screen();
-        break;
-      default:
-        break;
+    switch (message) {
+      case PAUSE_MESSAGE_INSERT:  CrealityDWIN.Confirm_Handler(FilInsert);  break;
+      case PAUSE_MESSAGE_OPTION:  CrealityDWIN.Popup_Handler(PurgeMore);    break;
+      case PAUSE_MESSAGE_HEAT:    CrealityDWIN.Confirm_Handler(HeaterTime); break;
+      case PAUSE_MESSAGE_WAITING: CrealityDWIN.Draw_Print_Screen();         break;
+      default: break;
     }
   }
 #endif
@@ -83,9 +59,7 @@ bool MarlinUI::get_blink() {
   return blink != 0;
 }
 
-void MarlinUI::update() {
-  CrealityDWIN.Update();
-}
+void MarlinUI::update() { CrealityDWIN.Update(); }
 
 void MarlinUI::init() {
   delay(800);
@@ -108,4 +82,4 @@ void MarlinUI::kill_screen(PGM_P const error, PGM_P const component) {
   CrealityDWIN.Draw_Popup((char*)"Printer Kill Reason:", error, (char*)"Restart Required", Wait, ICON_BLTouch);
 }
 
-#endif
+#endif // DWIN_CREALITY_LCD

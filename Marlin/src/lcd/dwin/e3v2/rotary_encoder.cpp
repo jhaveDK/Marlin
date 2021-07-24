@@ -97,12 +97,8 @@ ENCODER_DiffState Encoder_ReceiveAnalyze() {
       #if PIN_EXISTS(LCD_LED)
         //LED_Action();
       #endif
-      if (!ui.backlight) {
-        ui.refresh_brightness();
-      }
-      else {
-        return ENCODER_DIFF_ENTER;
-      }
+      if (ui.backlight) return ENCODER_DIFF_ENTER;
+      ui.refresh_brightness();
     }
     else return ENCODER_DIFF_NO;
   }

@@ -23,7 +23,7 @@
 
 /**
  * DWIN by Creality3D
- * Rewrite and Extui Port by Jacob Myers
+ * Rewrite by Jacob Myers
  */
 
 #include "../dwin_lcd.h"
@@ -309,9 +309,11 @@ public:
   void Draw_Main_Menu(uint8_t select=0);
   void Print_Screen_Icons();
   void Draw_Print_Screen();
-  void Draw_Print_Filename(bool reset=false);
+  void Draw_Print_Filename(const bool reset=false);
   void Draw_Print_ProgressBar();
-  void Draw_Print_ProgressRemain();
+  #if ENABLED(USE_M73_REMAINING_TIME)
+    void Draw_Print_ProgressRemain();
+  #endif
   void Draw_Print_ProgressElapsed();
   void Draw_Print_confirm();
   void Draw_SD_Item(uint8_t item, uint8_t row);
