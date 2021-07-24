@@ -26,10 +26,10 @@
  * Rewrite and Extui Port by Jacob Myers
  */
 
-#include "dwin.h"
+#include "../dwin_lcd.h"
 #include "rotary_encoder.h"
-#include "../../libs/BL24CXX.h"
-#include "../../inc/MarlinConfigPre.h"
+#include "../../../libs/BL24CXX.h"
+#include "../../../inc/MarlinConfigPre.h"
 
 enum processID : uint8_t {
   Main, Print, Menu, Value, Option, File, Popup, Confirm, Wait
