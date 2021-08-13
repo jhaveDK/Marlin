@@ -47,7 +47,7 @@ MarlinUI ui;
 #endif
 
 #if ENABLED(DWIN_CREALITY_LCD)
-  #include "dwin/creality_dwin.h"
+  #include "e3v2/creality/creality_dwin.h"
 #endif
 
 #if ENABLED(LCD_PROGRESS_BAR) && !IS_TFTGLCD_PANEL
@@ -65,15 +65,8 @@ MarlinUI ui;
 constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
 #if HAS_STATUS_MESSAGE
-  #if HAS_WIRED_LCD
-    #if ENABLED(STATUS_MESSAGE_SCROLLING)
-      uint8_t MarlinUI::status_scroll_offset; // = 0
-      constexpr uint8_t MAX_MESSAGE_LENGTH = _MAX(LONG_FILENAME_LENGTH, MAX_LANG_CHARSIZE * 2 * (LCD_WIDTH));
-    #else
-      constexpr uint8_t MAX_MESSAGE_LENGTH = MAX_LANG_CHARSIZE * (LCD_WIDTH);
-    #endif
-  #else
-    constexpr uint8_t MAX_MESSAGE_LENGTH = 63;
+  #if BOTH(HAS_WIRED_LCD, STATUS_MESSAGE_SCROLLING)
+    uint8_t MarlinUI::status_scroll_offset; // = 0
   #endif
   char MarlinUI::status_message[MAX_MESSAGE_LENGTH + 1];
   uint8_t MarlinUI::alert_level; // = 0
@@ -88,6 +81,14 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
 #if HAS_MULTI_LANGUAGE
   uint8_t MarlinUI::language; // Initialized by settings.load()
+  void MarlinUI::set_language(const uint8_t lang) {
+    if (lang < NUM_LANGUAGES) {
+      language = lang;
+      TERN_(HAS_MARLINUI_U8GLIB, update_language_font());
+      return_to_status();
+      refresh();
+    }
+  }
 #endif
 
 #if ENABLED(SOUND_MENU_ITEM)
@@ -156,6 +157,10 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
   #if HAS_POWER_MONITOR
     #include "../feature/power_monitor.h"
+  #endif
+
+  #if ENABLED(PSU_CONTROL) && defined(LED_BACKLIGHT_TIMEOUT)
+    #include "../feature/power.h"
   #endif
 
   #if HAS_ENCODER_ACTION
@@ -700,7 +705,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
      *     This is used to achieve more rapid stepping on kinematic machines.
      *
      * Currently used by the _lcd_move_xyz function in menu_motion.cpp
-     * and the ubl_map_move_to_xy funtion in menu_ubl.cpp.
+     * and the ubl_map_move_to_xy function in menu_ubl.cpp.
      */
     void ManualMove::task() {
 
@@ -826,8 +831,8 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
     static uint16_t max_display_update_time = 0;
     millis_t ms = millis();
 
-    #ifdef LED_BACKLIGHT_TIMEOUT
-      leds.update_timeout(powersupply_on);
+    #if ENABLED(PSU_CONTROL) && defined(LED_BACKLIGHT_TIMEOUT)
+      leds.update_timeout(powerManager.psu_on);
     #endif
 
     #if HAS_LCD_MENU
@@ -976,8 +981,8 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
           refresh(LCDVIEW_REDRAW_NOW);
 
-          #ifdef LED_BACKLIGHT_TIMEOUT
-            if (!powersupply_on) leds.reset_timeout(ms);
+          #if ENABLED(PSU_CONTROL) && defined(LED_BACKLIGHT_TIMEOUT)
+            if (!powerManager.psu_on) leds.reset_timeout(ms);
           #endif
         }
 
